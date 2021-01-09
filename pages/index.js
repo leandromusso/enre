@@ -5,31 +5,35 @@ import { ToastContainer, toast } from "react-toastify";
 import Countdown from "react-countdown";
 import { Bar, Pie } from "react-chartjs-2";
 import Switch from "react-switch";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faLightbulb } from "@fortawesome/free-regular-svg-icons";
 
 export default function Home() {
-    
+    const [loading, setLoading] = React.useState(false);
+
     //Declaro hook de prestador y modo gráfico
-    const [prestador, setPrestador] = React.useState('S')
-    const [modoGrafico, setModoGrafico] = React.useState('localidad')
+    const [prestador, setPrestador] = React.useState("S");
+    const [modoGrafico, setModoGrafico] = React.useState("localidad");
 
     const handleChangePrestador = () => {
-        if(prestador == 'S'){
-            return setPrestador('N')
+        if (prestador == "S") {
+            return setPrestador("N");
         }
-        return setPrestador('S')
-    }
+        return setPrestador("S");
+    };
 
     const handleChangeModoGrafico = () => {
-        if(modoGrafico == 'localidad'){
-            return setModoGrafico('partido')
+        if (modoGrafico == "localidad") {
+            return setModoGrafico("partido");
         }
-        return setModoGrafico('localidad')
-    }    
+        return setModoGrafico("localidad");
+    };
 
     //Declaro hook de control para evitar múltiples intervalos
     const [started, setStarted] = React.useState(false);
     //Declaro tiempo entre request
-    const refreshTime = 60 // En segundos
+    const refreshTime = 60; // En segundos
 
     //Declaro hook que contiene los datos
     const [data, setData] = React.useState({
@@ -45,31 +49,33 @@ export default function Home() {
         cortesComunicados: [],
         cortesServicioBaja: [],
     });
-    
+
     //Función para obtener los datos
     const getData = async () => {
-        if(prestador){
+        if (prestador) {
+            setLoading(true);
             const data = await axios.get(`./api?prestador=${prestador}`);
+            setLoading(false);
             setData(data.data);
         }
     };
 
     React.useEffect(() => {
-        setStarted(true)
-        getData()
+        setStarted(true);
+        getData();
     }, [prestador, modoGrafico]);
 
     React.useEffect(() => {
         let intervalID;
         if (started) {
-          intervalID = setInterval(() => {
-            getData()
-          }, refreshTime * 100);
+            intervalID = setInterval(() => {
+                getData();
+            }, refreshTime * 1000);
         } else {
-          clearInterval(intervalID);
+            clearInterval(intervalID);
         }
         return () => clearInterval(intervalID);
-      }, [started, prestador, modoGrafico]);    
+    }, [started, prestador, modoGrafico]);
 
     //Evento al obtener una nueva hora de actualización
     React.useEffect(() => {
@@ -83,128 +89,124 @@ export default function Home() {
 
     //Declaro hook para el gráfico de barras
     const [barData, setBarData] = React.useState({
-        labels : [],
-        datasets : []
-    })
+        labels: [],
+        datasets: [],
+    });
 
     //Declaro hook para el gráfico de torta
     const [pieData, setPieData] = React.useState({
-        labels : ['Sin suministro', 'Con suministro'],
-        datasets : [{
-            data : [0,0],
-            backgroundColor : [
-                '#999999',
-                '#111111'
-            ]
-        }]
-    })    
+        labels: ["Sin suministro", "Con suministro"],
+        datasets: [
+            {
+                data: [0, 0],
+                backgroundColor: ["#999999", "#111111"],
+            },
+        ],
+    });
 
     //Función para generar los datos del gráfico
     const dataGrafico = () => {
-
         setPieData({
-            labels : ['Sin suministro', 'Con suministro'],
-            datasets : [{
-                data : [
-                    parseInt(data.totalUsuariosSinSuministro.replace(/\./g, "")),
-                    parseInt(data.totalUsuariosConSuministro.replace(/\./g, ""))
-                ],
-                backgroundColor : [
-                    '#999999',
-                    '#111111'
-                ]
-            }]
-        })
+            labels: ["Sin suministro", "Con suministro"],
+            datasets: [
+                {
+                    data: [
+                        parseInt(
+                            data.totalUsuariosSinSuministro.replace(/\./g, "")
+                        ),
+                        parseInt(
+                            data.totalUsuariosConSuministro.replace(/\./g, "")
+                        ),
+                    ],
+                    backgroundColor: ["#999999", "#111111"],
+                },
+            ],
+        });
 
         const dataTypes = [
             {
-                type : 'cortesComunicados',
-                label : 'Comunicados',
-                backgroundColor : '#999999',
+                type: "cortesComunicados",
+                label: "Comunicados",
+                backgroundColor: "#999999",
             },
             {
-                type : 'cortesPreventivos',
-                label : 'Preventivos',
-                backgroundColor : '#777777',
+                type: "cortesPreventivos",
+                label: "Preventivos",
+                backgroundColor: "#777777",
             },
             {
-                type : 'cortesProgramados',
-                label : 'Programados',
-                backgroundColor : '#555555',
+                type: "cortesProgramados",
+                label: "Programados",
+                backgroundColor: "#555555",
             },
             {
-                type : 'cortesServicioBaja',
-                label : 'Servicio Baja',
-                backgroundColor : '#333333',
+                type: "cortesServicioBaja",
+                label: "Servicio Baja",
+                backgroundColor: "#333333",
             },
             {
-                type : 'cortesServicioMedia',
-                label : 'Servicio Media',
-                backgroundColor : '#111111',
+                type: "cortesServicioMedia",
+                label: "Servicio Media",
+                backgroundColor: "#111111",
             },
-            
-        ]
-        
+        ];
+
         //Declaro variables auxiliares
-        let labels = []
-        let datasets = []
+        let labels = [];
+        let datasets = [];
 
-        if(data.fuente != ""){
+        if (data.fuente != "") {
             setBarData({
-                labels : [],
-                datasets : []
-            })
+                labels: [],
+                datasets: [],
+            });
 
-            dataTypes.map((type , iType) => {
-                if(data[type.type]){
-                    
+            dataTypes.map((type, iType) => {
+                if (data[type.type]) {
                     data[type.type].map((item, i) => {
-                        if(!labels.includes(item[modoGrafico])){
-                            labels.push(item[modoGrafico])
+                        if (!labels.includes(item[modoGrafico])) {
+                            labels.push(item[modoGrafico]);
                         }
-                    })
-                    
-                    const {label, backgroundColor} = type
+                    });
+
+                    const { label, backgroundColor } = type;
 
                     datasets.push({
                         label,
                         backgroundColor,
-                        data : []
-                    })
-                    
+                        data: [],
+                    });
                 }
-            })
+            });
 
             //Por cada label
             labels.map((label, i) => {
                 //Por cada tipo de dato
-                dataTypes.map((type , iType) => {
+                dataTypes.map((type, iType) => {
                     //Si tiene datos
-                    if(data[type.type]){
-                        let usuarios = 0
+                    if (data[type.type]) {
+                        let usuarios = 0;
                         //Recorro los datos
                         data[type.type].map((item, i) => {
-                            if(item[modoGrafico] === label){
-                                usuarios += parseInt(item.usuarios)
+                            if (item[modoGrafico] === label) {
+                                usuarios += parseInt(item.usuarios);
                             }
-                        })
-                        datasets[iType].data.push(usuarios)
+                        });
+                        datasets[iType].data.push(usuarios);
                     }
-                })
-
-            })            
+                });
+            });
 
             setBarData({
                 labels,
-                datasets
-            })
-                       
-        }                
-    }
-    
+                datasets,
+            });
+        }
+    };
+
     React.useEffect(() => {
-        dataGrafico()
-    }, [data])
+        dataGrafico();
+    }, [data]);
 
     return (
         <div>
@@ -216,51 +218,80 @@ export default function Home() {
                 <ToastContainer />
                 <Container fluid>
                     <Row className="my-5">
-                        <Col md={6}>
+                        <Col lg={6}>
                             <Row>
-                                <Col xs={2} className="text-right">
-                                    Edesur
+                                <Col xs={8}>
+                                    <Row>
+                                        <Col xs={4} className="text-right">
+                                            Edesur
+                                        </Col>
+                                        <Col xs={4} className="text-center">
+                                            <label>
+                                                <Switch
+                                                    onChange={
+                                                        handleChangePrestador
+                                                    }
+                                                    checked={prestador == "N"}
+                                                    offColor="#333"
+                                                    onColor="#333"
+                                                    uncheckedIcon={<div></div>}
+                                                    checkedIcon={<div></div>}
+                                                />
+                                            </label>
+                                        </Col>
+                                        <Col xs={4} className="text-left">
+                                            Edenor
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={4} className="text-right">
+                                            Localidad
+                                        </Col>
+                                        <Col xs={4} className="text-center">
+                                            <label>
+                                                <Switch
+                                                    onChange={
+                                                        handleChangeModoGrafico
+                                                    }
+                                                    checked={
+                                                        modoGrafico == "partido"
+                                                    }
+                                                    offColor="#333"
+                                                    onColor="#333"
+                                                    uncheckedIcon={<div></div>}
+                                                    checkedIcon={<div></div>}
+                                                />
+                                            </label>
+                                        </Col>
+                                        <Col xs={4} className="text-left">
+                                            Partido
+                                        </Col>
+                                    </Row>
                                 </Col>
-                                <Col xs={2} className="text-center">
-                                    <label>
-                                        <Switch
-                                            onChange={handleChangePrestador}
-                                            checked={prestador == 'N'}
-                                            offColor="#333"
-                                            onColor="#333"                                    
-                                            uncheckedIcon={<div></div>}
-                                            checkedIcon={<div></div>}                                    
-                                        />
-                                    </label>
-                                </Col>
-                                <Col xs={2} className="text-left">
-                                    Edenor
+                                <Col xs={4}>
+                                    <Row>
+                                        <Col
+                                            xs={12}
+                                            className="text-center"
+                                        >
+                                            {
+                                                loading?(
+                                                    <div>
+                                                        <FontAwesomeIcon
+                                                            icon={faLightbulb}
+                                                            size="2x"
+                                                            spin
+                                                        />
+                                                        <h6>...Cargando</h6>
+                                                    </div>
+                                                ):('')
+                                            }
+                                        </Col>
+                                    </Row>
                                 </Col>
                             </Row>
-
-                            <Row>
-                                <Col xs={2} className="text-right">
-                                    Localidad
-                                </Col>
-                                <Col xs={2} className="text-center">
-                                    <label>
-                                        <Switch
-                                            onChange={handleChangeModoGrafico}
-                                            checked={modoGrafico == 'partido'}
-                                            offColor="#333"
-                                            onColor="#333"                                    
-                                            uncheckedIcon={<div></div>}
-                                            checkedIcon={<div></div>}                                    
-                                        />
-                                    </label>
-                                </Col>
-                                <Col xs={2} className="text-left">
-                                    Partido
-                                </Col>
-                            </Row>                            
-
                         </Col>
-                        <Col md={6}>
+                        <Col lg={6}>
                             <h6>Fuente: {data.fuente}</h6>
                             <h6>Empresa: {data.empresa}</h6>
                             <h6>
@@ -271,37 +302,43 @@ export default function Home() {
                                 Usuarios con suministro:{" "}
                                 {data.totalUsuariosConSuministro}
                             </h6>
-                            <h6>Última actualización: {data.ultimaActualizacion}</h6>
+                            <h6>
+                                Última actualización: {data.ultimaActualizacion}
+                            </h6>
                             <h6>
                                 Usuarios que ayer no tuvieron suministro:{" "}
                                 {data.totalUsuariosAyer}
-                            </h6>                            
+                            </h6>
                         </Col>
                     </Row>
                     <Row>
-                        <Col md={6}>
+                        <Col lg={6}>
                             <Bar
                                 data={barData}
                                 options={{
                                     tooltips: {
-                                        mode: 'index',
-                                        intersect: true
+                                        mode: "index",
+                                        intersect: true,
                                     },
                                     responsive: true,
                                     scales: {
-                                        xAxes: [{
-                                            stacked: true,
-                                        }],
-                                        yAxes: [{
-                                            stacked: true
-                                        }]
-                                    }
+                                        xAxes: [
+                                            {
+                                                stacked: true,
+                                            },
+                                        ],
+                                        yAxes: [
+                                            {
+                                                stacked: true,
+                                            },
+                                        ],
+                                    },
                                 }}
                             />
                         </Col>
-                        <Col md={6}>
-                             <Pie data={pieData}/>
-                        </Col>                        
+                        <Col lg={6}>
+                            <Pie data={pieData} />
+                        </Col>
                     </Row>
 
                     {data.cortesPreventivos.length > 0 ? (
@@ -588,7 +625,16 @@ export default function Home() {
             </main>
 
             <footer className="text-center">
-                <p>Desarrollado por Leandro Omar Musso. Código fuente disponible en <a target="_blank" href="https://github.com/leandromusso/enre">Github</a></p>
+                <p>
+                    Desarrollado por Leandro Omar Musso. Código fuente
+                    disponible en{" "}
+                    <a
+                        target="_blank"
+                        href="https://github.com/leandromusso/enre"
+                    >
+                        Github
+                    </a>
+                </p>
             </footer>
         </div>
     );
