@@ -35,12 +35,9 @@ let subSubKey, subSubValue
 export default async (req, resp) => {
     switch(req.method){
         case 'GET':{
-
-            await axios.get('https://www.enre.gov.ar/paginacorte/js/data_EDS.js')
+            await axios.get(`https://www.enre.gov.ar/paginacorte/js/data_ED${req.query.prestador}.js`)
             .then(function (response) {
                 let data = response.data.substring(12)
-
-                //return(console.log(data))
         
                 data = data.split(',\r\n')
                 
