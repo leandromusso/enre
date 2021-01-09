@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { faLightbulb } from "@fortawesome/free-regular-svg-icons";
 
+
 export default function Home() {
     const [loading, setLoading] = React.useState(false);
 
@@ -313,28 +314,29 @@ export default function Home() {
                     </Row>
                     <Row>
                         <Col lg={6}>
-                            <Bar
-                                data={barData}
-                                options={{
-                                    tooltips: {
-                                        mode: "index",
-                                        intersect: true,
-                                    },
-                                    responsive: true,
-                                    scales: {
-                                        xAxes: [
-                                            {
-                                                stacked: true,
-                                            },
-                                        ],
-                                        yAxes: [
-                                            {
-                                                stacked: true,
-                                            },
-                                        ],
-                                    },
-                                }}
-                            />
+                                <Bar
+                                    height={300}
+                                    data={barData}
+                                    options={{
+                                        tooltips: {
+                                            mode: "index",
+                                            intersect: true,
+                                        },
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            xAxes: [
+                                                {
+                                                    stacked: true,
+                                                },
+                                            ],
+                                            yAxes: [
+                                                {
+                                                    stacked: true,
+                                                },
+                                            ],
+                                        },
+                                    }}
+                                />
                         </Col>
                         <Col lg={6}>
                             <Pie data={pieData} />
@@ -636,6 +638,7 @@ export default function Home() {
                     </a>
                 </p>
             </footer>
+
         </div>
     );
 }
