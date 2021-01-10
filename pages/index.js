@@ -6,6 +6,7 @@ import { Bar, Pie } from "react-chartjs-2";
 import Switch from "react-switch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLightbulb } from "@fortawesome/free-regular-svg-icons";
+import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
 import DataTable from "../components/DataTable";
 
 export default function Home() {
@@ -134,12 +135,8 @@ export default function Home() {
             datasets: [
                 {
                     data: [
-                        parseInt(
-                            data.totalUsuariosSinSuministro.replace(/\./g, "")
-                        ),
-                        parseInt(
-                            data.totalUsuariosConSuministro.replace(/\./g, "")
-                        ),
+                        parseInt(data.totalUsuariosSinSuministro.replace(/\./g, "")),
+                        parseInt(data.totalUsuariosConSuministro.replace(/\./g, "")),
                     ],
                     backgroundColor: ["#999999", "#111111"],
                 },
@@ -206,7 +203,19 @@ export default function Home() {
     return (
         <div>
             <Head>
-                <title>Reporte ENRE</title>
+                <title>ENRE Reporte de cortes de luz</title>
+                <meta name="title" content="ENRE Reporte de cortes de luz"/>
+                <meta name="description" content="Sitio no oficial del Ente Regulador de la Electricidad de Argentina. Reporte de cortes de luz con gráficos."/>
+                <meta property="og:type" content="website"/>
+                <meta property="og:url" content="https://enre.vercel.app/"/>
+                <meta property="og:title" content="ENRE Reporte de cortes de luz"/>
+                <meta property="og:description" content="Sitio no oficial del Ente Regulador de la Electricidad de Argentina. Reporte de cortes de luz con gráficos."/>
+                <meta property="og:image" content="https://images.pexels.com/photos/577514/pexels-photo-577514.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"/>
+                <meta property="twitter:card" content="summary_large_image"/>
+                <meta property="twitter:url" content="https://enre.vercel.app/"/>
+                <meta property="twitter:title" content="ENRE Reporte de cortes de luz"/>
+                <meta property="twitter:description" content="Sitio no oficial del Ente Regulador de la Electricidad de Argentina. Reporte de cortes de luz con gráficos."/>
+                <meta property="twitter:image" content="https://images.pexels.com/photos/577514/pexels-photo-577514.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"/>                
             </Head>
 
             <main className="my-2">
@@ -221,6 +230,7 @@ export default function Home() {
                                         <Col xs={4} className="text-center">
                                             <label>
                                                 <Switch
+                                                    aria-label="Prestador"
                                                     onChange={
                                                         handleChangePrestador
                                                     }
@@ -239,12 +249,9 @@ export default function Home() {
                                         <Col xs={4} className="text-center">
                                             <label>
                                                 <Switch
-                                                    onChange={
-                                                        handleChangeModoGrafico
-                                                    }
-                                                    checked={
-                                                        modoGrafico == "partido"
-                                                    }
+                                                    aria-label="Tipo de gráfico"
+                                                    onChange={handleChangeModoGrafico}
+                                                    checked={modoGrafico == "partido"}
                                                     offColor="#333"
                                                     onColor="#333"
                                                     uncheckedIcon={<div></div>}
@@ -299,17 +306,9 @@ export default function Home() {
                                         },
                                         maintainAspectRatio: false,
                                         scales: {
-                                            yAxes: [
-                                                {
-                                                    stacked: true,
-                                                },
-                                            ],
-                                            xAxes: [
-                                                {
-                                                    stacked: true,
-                                                },
-                                            ],                                            
-                                        },
+                                            yAxes: [{stacked: true}],
+                                            xAxes: [{stacked: true}]                                            
+                                        }
                                     }}
                                 />
                         </Col>
@@ -337,8 +336,10 @@ export default function Home() {
 
             <footer className="text-center">
                 <p>
-                    Desarrollado por Leandro Omar Musso. Código fuente disponible en
-                    <a target="_blank" href="https://github.com/leandromusso/enre">Github</a>
+                    Desarrollado por Leandro Omar Musso
+                    <a className="ml-1 text-dark" target="_blank" href="https://github.com/leandromusso/enre" aria-label="Github" rel="noopener"> 
+                        <FontAwesomeIcon size="lg" icon={faGithubAlt}/>
+                    </a>
                 </p>
             </footer>
 

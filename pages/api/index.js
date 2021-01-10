@@ -156,10 +156,6 @@ export default async (req, resp) => {
               // handle error
               console.log(error);
             })
-            .then(function () {
-              // always executed
-            });            
-
         }         
     }
 }
