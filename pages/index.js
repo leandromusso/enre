@@ -13,12 +13,12 @@ import {
     InputGroup,
     FormControl,
     Card,
+    Spinner
 } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import { Bar, Pie } from "react-chartjs-2";
 import Switch from "react-switch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLightbulb } from "@fortawesome/free-regular-svg-icons";
 import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
 import DataTable from "../components/DataTable";
 
@@ -104,7 +104,11 @@ export default function Home() {
 
     //Evento al obtener una nueva hora de actualización
     React.useEffect(() => {
-        toast("Información Actualizada!");
+        if(data.ultimaActualizacion){
+            toast.dark("Información Actualizada!", {
+                position: "bottom-left",
+            });
+        }
     }, [data.ultimaActualizacion]);
 
     //Declaro hook para el gráfico de barras
@@ -353,7 +357,28 @@ export default function Home() {
             </Head>
 
             <main className="my-2">
-                <ToastContainer />
+                <ToastContainer
+                    position="bottom-left"
+                />                        
+                <div className="text-center"
+                    style = {
+                        {
+                            position: "fixed",
+                            bottom : "10px",
+                            right : "10px",
+                            zIndex : 99
+                        }
+                    }
+                >
+                    {loading ? (
+                        <Spinner animation="border" role="status">
+                            <span className="sr-only">Loading...</span>
+                        </Spinner>
+                    ) : (
+                        ""
+                    )}
+                </div>
+               
                 <Container fluid>
                     <Row className="my-3">
                         <Col lg={6} className="order-lg-1">
@@ -366,21 +391,29 @@ export default function Home() {
                                 >CONFIGURACIÓN</Card.Header>
                                 <Card.Body>
                                     <Row>
-                                        <Col xs={9}>
+                                        <Col xs={12}>
                                             <Row>
                                                 <Col
                                                     xs={4}
-                                                    className="text-right"
+                                                    className="text-right p-0"
                                                 >
-                                                    Edesur
+                                                    <a
+                                                    style = {
+                                                        {
+                                                            cursor: 'pointer',
+                                                            textDecoration : prestador == 'S'? 'underline': 'none'
+                                                        }
+                                                    }                                                    
+                                                    onClick={() => setPrestador('S')}>Edesur</a>
                                                 </Col>
                                                 <Col
                                                     xs={4}
-                                                    className="text-center"
+                                                    className="text-center p-0"
                                                 >
                                                     <label>
                                                         <Switch
                                                             aria-label="Prestador"
+                                                            disabled = {loading}
                                                             onChange={
                                                                 handleChangePrestador
                                                             }
@@ -400,24 +433,39 @@ export default function Home() {
                                                 </Col>
                                                 <Col
                                                     xs={4}
-                                                    className="text-left"
+                                                    className="text-left p-0"
                                                 >
-                                                    Edenor
+                                                    <a
+                                                    style = {
+                                                        {
+                                                            cursor: 'pointer',
+                                                            textDecoration : prestador == 'N'? 'underline': 'none'
+                                                        }
+                                                    }                                                     
+                                                    onClick={() => setPrestador('N')}>Edenor</a>
                                                 </Col>
                                             </Row>
                                             <Row>
                                                 <Col
                                                     xs={4}
-                                                    className="text-right"
+                                                    className="text-right p-0"
                                                 >
-                                                    Localidad
+                                                    <a
+                                                    style = {
+                                                        {
+                                                            cursor: 'pointer',
+                                                            textDecoration : modoGrafico == 'localidad'? 'underline': 'none'
+                                                        }
+                                                    }                                                    
+                                                    onClick={() => setModoGrafico('localidad')}>Localidad</a>
                                                 </Col>
                                                 <Col
                                                     xs={4}
-                                                    className="text-center"
+                                                    className="text-center p-0"
                                                 >
                                                     <label>
                                                         <Switch
+                                                            disabled = {loading}
                                                             aria-label="Tipo de gráfico"
                                                             onChange={
                                                                 handleChangeModoGrafico
@@ -439,35 +487,16 @@ export default function Home() {
                                                 </Col>
                                                 <Col
                                                     xs={4}
-                                                    className="text-left"
+                                                    className="text-left p-0"
                                                 >
-                                                    Partido
-                                                </Col>
-                                            </Row>
-                                        </Col>
-                                        <Col xs={3}>
-                                            <Row>
-                                                <Col
-                                                    xs={12}
-                                                    className="text-center"
-                                                >
-                                                    {loading ? (
-                                                        <div>
-                                                            <FontAwesomeIcon
-                                                                icon={
-                                                                    faLightbulb
-                                                                }
-                                                                size="2x"
-                                                                spin
-                                                            />
-                                                            <p style={{
-                                                                fontSize : '10pt'
-                                                            }}
-                                                            >...Cargando</p>
-                                                        </div>
-                                                    ) : (
-                                                        ""
-                                                    )}
+                                                    <a
+                                                    style = {
+                                                        {
+                                                            cursor: 'pointer',
+                                                            textDecoration : modoGrafico == 'partido'? 'underline': 'none'
+                                                        }
+                                                    }
+                                                    onClick={() => setModoGrafico('partido')}>Partido</a>
                                                 </Col>
                                             </Row>
                                         </Col>
@@ -475,7 +504,7 @@ export default function Home() {
                                 </Card.Body>
                             </Card>
                         </Col>
-                        <Col lg={6} className="order-lg-0">
+                        <Col lg={6} className="order-lg-0 mt-3 mt-md-0">
                             <Card>
                                 <Card.Header
                                     style={{
@@ -486,34 +515,54 @@ export default function Home() {
                                     {data.empresa}
                                 </Card.Header>
                                 <Card.Body>
-                                    <h6>
-                                        Usuarios sin suministro:{" "}
-                                        <span
-                                            style={{
-                                                color: colors[5],
-                                            }}
-                                        >
-                                            {data.totalUsuariosSinSuministro}
-                                        </span>
-                                    </h6>
-                                    <h6>
-                                        Usuarios con suministro:{" "}
-                                        <span
-                                            style={{
-                                                color: colors[6],
-                                            }}
-                                        >
-                                            {data.totalUsuariosConSuministro}
-                                        </span>
-                                    </h6>
-                                    <h6>
-                                        Última actualización:{" "}
-                                        {data.ultimaActualizacion}
-                                    </h6>
-                                    <h6>
-                                        Usuarios que ayer no tuvieron
-                                        suministro: {data.totalUsuariosAyer}
-                                    </h6>
+                                    <Row>
+                                        <Col sm={6}>
+                                            <h6 className="text-center">Usuarios sin suministro:</h6>
+                                        </Col>
+                                        <Col sm={6}>
+                                            <h6 className="text-center"
+                                                style={{
+                                                    color: colors[5],
+                                                }}
+                                            >
+                                                {data.totalUsuariosSinSuministro}
+                                            </h6>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col sm={6}>
+                                            <h6 className="text-center">Usuarios con suministro:</h6>
+                                        </Col>
+                                        <Col sm={6}>
+                                            <h6 className="text-center"
+                                                style={{
+                                                    color: colors[6],
+                                                }}
+                                            >
+                                                {data.totalUsuariosConSuministro}
+                                            </h6>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col sm={6}>
+                                            <h6 className="text-center">Última actualización:</h6>
+                                        </Col>
+                                        <Col sm={6}>
+                                            <h6 className="text-center">
+                                                {data.ultimaActualizacion}
+                                            </h6>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col sm={6}>
+                                            <h6 className="text-center">Usuarios que ayer no tuvieron suministro:</h6>
+                                        </Col>
+                                        <Col sm={6}>
+                                            <h6 className="text-center">
+                                                {data.totalUsuariosAyer}
+                                            </h6>
+                                        </Col>
+                                    </Row>                                                                                                            
                                 </Card.Body>
                             </Card>
                         </Col>
