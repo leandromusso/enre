@@ -1,8 +1,8 @@
-import {Table, Card} from "react-bootstrap";
+import {Card} from "react-bootstrap";
 import Countdown from "react-countdown";
 import DataTable from "react-data-table-component";
 
-function DataTableComponent({data, type, filterText}) {
+function DataTableComponent({data, type, filterText, color}) {
 
     const filteredItems = data.filter(
         (item) =>
@@ -78,7 +78,12 @@ function DataTableComponent({data, type, filterText}) {
     if(filteredItems.length > 0){
         return (
             <Card className="my-2">
-            <Card.Header>{type.label}</Card.Header>
+            <Card.Header
+                style = {{
+                    background : color,
+                    color: "white"
+                }}
+            >{type.label}</Card.Header>
             <Card.Body>
                 <DataTable
                     dense

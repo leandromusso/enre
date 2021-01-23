@@ -6,7 +6,14 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; /* eslint-disable import/first */
 import Head from "next/head";
 import axios from "axios";
-import { Container, Row, Col, InputGroup, FormControl } from "react-bootstrap";
+import {
+    Container,
+    Row,
+    Col,
+    InputGroup,
+    FormControl,
+    Card,
+} from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import { Bar, Pie } from "react-chartjs-2";
 import Switch from "react-switch";
@@ -17,6 +24,8 @@ import DataTable from "../components/DataTable";
 
 export default function Home() {
     const [loading, setLoading] = React.useState(false);
+
+    const [modoNoche, setModoNoche] = React.useState(false);
 
     //Declaro hook de prestador y modo gráfico
     const [prestador, setPrestador] = React.useState("S");
@@ -66,6 +75,16 @@ export default function Home() {
         }
     };
 
+    const [colors, setColors] = React.useState([
+        "#e3b505",
+        "#95190c",
+        "#610345",
+        "#107e7d",
+        "#044b7f",
+        "#dc3545",
+        "#28a745",
+    ]);
+
     React.useEffect(() => {
         setStarted(true);
         getData();
@@ -99,8 +118,8 @@ export default function Home() {
         labels: ["Sin suministro", "Con suministro"],
         datasets: [
             {
-                data: [0, 0],
-                backgroundColor: ["#999999", "#111111"],
+                data: [],
+                backgroundColor: [],
             },
         ],
     });
@@ -109,28 +128,28 @@ export default function Home() {
         {
             type: "cortesComunicados",
             label: "Comunicados",
-            backgroundColor: "#999999",
+            backgroundColor: colors[0],
         },
         {
             type: "cortesPreventivos",
             label: "Preventivos",
-            backgroundColor: "#777777",
+            backgroundColor: colors[1],
         },
         {
             type: "cortesProgramados",
             label: "Programados",
-            backgroundColor: "#555555",
+            backgroundColor: colors[2],
         },
         {
             type: "cortesServicioBaja",
             label: "Servicio Baja",
-            backgroundColor: "#333333",
+            backgroundColor: colors[3],
             isBajaTension: true,
         },
         {
             type: "cortesServicioMedia",
             label: "Servicio Media",
-            backgroundColor: "#111111",
+            backgroundColor: colors[4],
         },
     ];
 
@@ -148,7 +167,8 @@ export default function Home() {
                             data.totalUsuariosConSuministro.replace(/\./g, "")
                         ),
                     ],
-                    backgroundColor: ["#999999", "#111111"],
+                    backgroundColor: [colors[5], colors[6]],
+                    borderWidth: 0,
                 },
             ],
         });
@@ -176,6 +196,7 @@ export default function Home() {
                     datasets.push({
                         label,
                         backgroundColor,
+                        borderWidth: 0,
                         data: [],
                     });
                 }
@@ -334,101 +355,171 @@ export default function Home() {
             <main className="my-2">
                 <ToastContainer />
                 <Container fluid>
-                    <Row className="my-5">
-                        <Col lg={6}>
-                            <Row>
-                                <Col xs={8}>
+                    <Row className="my-3">
+                        <Col lg={6} className="order-lg-1">
+                            <Card className="w-100 h-100">
+                                <Card.Header
+                                    style={{
+                                        background: "#333",
+                                        color: "white",
+                                    }}
+                                >CONFIGURACIÓN</Card.Header>
+                                <Card.Body>
                                     <Row>
-                                        <Col xs={4} className="text-right">
-                                            Edesur
+                                        <Col xs={9}>
+                                            <Row>
+                                                <Col
+                                                    xs={4}
+                                                    className="text-right"
+                                                >
+                                                    Edesur
+                                                </Col>
+                                                <Col
+                                                    xs={4}
+                                                    className="text-center"
+                                                >
+                                                    <label>
+                                                        <Switch
+                                                            aria-label="Prestador"
+                                                            onChange={
+                                                                handleChangePrestador
+                                                            }
+                                                            checked={
+                                                                prestador == "N"
+                                                            }
+                                                            offColor="#333"
+                                                            onColor="#333"
+                                                            uncheckedIcon={
+                                                                <div></div>
+                                                            }
+                                                            checkedIcon={
+                                                                <div></div>
+                                                            }
+                                                        />
+                                                    </label>
+                                                </Col>
+                                                <Col
+                                                    xs={4}
+                                                    className="text-left"
+                                                >
+                                                    Edenor
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col
+                                                    xs={4}
+                                                    className="text-right"
+                                                >
+                                                    Localidad
+                                                </Col>
+                                                <Col
+                                                    xs={4}
+                                                    className="text-center"
+                                                >
+                                                    <label>
+                                                        <Switch
+                                                            aria-label="Tipo de gráfico"
+                                                            onChange={
+                                                                handleChangeModoGrafico
+                                                            }
+                                                            checked={
+                                                                modoGrafico ==
+                                                                "partido"
+                                                            }
+                                                            offColor="#333"
+                                                            onColor="#333"
+                                                            uncheckedIcon={
+                                                                <div></div>
+                                                            }
+                                                            checkedIcon={
+                                                                <div></div>
+                                                            }
+                                                        />
+                                                    </label>
+                                                </Col>
+                                                <Col
+                                                    xs={4}
+                                                    className="text-left"
+                                                >
+                                                    Partido
+                                                </Col>
+                                            </Row>
                                         </Col>
-                                        <Col xs={4} className="text-center">
-                                            <label>
-                                                <Switch
-                                                    aria-label="Prestador"
-                                                    onChange={
-                                                        handleChangePrestador
-                                                    }
-                                                    checked={prestador == "N"}
-                                                    offColor="#333"
-                                                    onColor="#333"
-                                                    uncheckedIcon={<div></div>}
-                                                    checkedIcon={<div></div>}
-                                                />
-                                            </label>
-                                        </Col>
-                                        <Col xs={4} className="text-left">
-                                            Edenor
+                                        <Col xs={3}>
+                                            <Row>
+                                                <Col
+                                                    xs={12}
+                                                    className="text-center"
+                                                >
+                                                    {loading ? (
+                                                        <div>
+                                                            <FontAwesomeIcon
+                                                                icon={
+                                                                    faLightbulb
+                                                                }
+                                                                size="2x"
+                                                                spin
+                                                            />
+                                                            <p style={{
+                                                                fontSize : '10pt'
+                                                            }}
+                                                            >...Cargando</p>
+                                                        </div>
+                                                    ) : (
+                                                        ""
+                                                    )}
+                                                </Col>
+                                            </Row>
                                         </Col>
                                     </Row>
-                                    <Row>
-                                        <Col xs={4} className="text-right">
-                                            Localidad
-                                        </Col>
-                                        <Col xs={4} className="text-center">
-                                            <label>
-                                                <Switch
-                                                    aria-label="Tipo de gráfico"
-                                                    onChange={
-                                                        handleChangeModoGrafico
-                                                    }
-                                                    checked={
-                                                        modoGrafico == "partido"
-                                                    }
-                                                    offColor="#333"
-                                                    onColor="#333"
-                                                    uncheckedIcon={<div></div>}
-                                                    checkedIcon={<div></div>}
-                                                />
-                                            </label>
-                                        </Col>
-                                        <Col xs={4} className="text-left">
-                                            Partido
-                                        </Col>
-                                    </Row>
-                                </Col>
-                                <Col xs={4}>
-                                    <Row>
-                                        <Col xs={12} className="text-center">
-                                            {loading ? (
-                                                <div>
-                                                    <FontAwesomeIcon
-                                                        icon={faLightbulb}
-                                                        size="2x"
-                                                        spin
-                                                    />
-                                                    <h6>...Cargando</h6>
-                                                </div>
-                                            ) : (
-                                                ""
-                                            )}
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>
+                                </Card.Body>
+                            </Card>
                         </Col>
-                        <Col lg={6}>
-                            <h6>Fuente: {data.fuente}</h6>
-                            <h6>Empresa: {data.empresa}</h6>
-                            <h6>
-                                Usuarios sin suministro:{" "}
-                                {data.totalUsuariosSinSuministro}
-                            </h6>
-                            <h6>
-                                Usuarios con suministro:{" "}
-                                {data.totalUsuariosConSuministro}
-                            </h6>
-                            <h6>
-                                Última actualización: {data.ultimaActualizacion}
-                            </h6>
-                            <h6>
-                                Usuarios que ayer no tuvieron suministro:{" "}
-                                {data.totalUsuariosAyer}
-                            </h6>
+                        <Col lg={6} className="order-lg-0">
+                            <Card>
+                                <Card.Header
+                                    style={{
+                                        background: "#333",
+                                        color: "white",
+                                    }}
+                                >
+                                    {data.empresa}
+                                </Card.Header>
+                                <Card.Body>
+                                    <h6>
+                                        Usuarios sin suministro:{" "}
+                                        <span
+                                            style={{
+                                                color: colors[5],
+                                            }}
+                                        >
+                                            {data.totalUsuariosSinSuministro}
+                                        </span>
+                                    </h6>
+                                    <h6>
+                                        Usuarios con suministro:{" "}
+                                        <span
+                                            style={{
+                                                color: colors[6],
+                                            }}
+                                        >
+                                            {data.totalUsuariosConSuministro}
+                                        </span>
+                                    </h6>
+                                    <h6>
+                                        Última actualización:{" "}
+                                        {data.ultimaActualizacion}
+                                    </h6>
+                                    <h6>
+                                        Usuarios que ayer no tuvieron
+                                        suministro: {data.totalUsuariosAyer}
+                                    </h6>
+                                </Card.Body>
+                            </Card>
                         </Col>
                     </Row>
                     <Row>
-                        <Col lg={6}>
+                        <Col lg={8}>
                             <Bar
                                 height={300}
                                 data={barData}
@@ -439,13 +530,24 @@ export default function Home() {
                                     },
                                     maintainAspectRatio: false,
                                     scales: {
-                                        yAxes: [{ stacked: true }],
-                                        xAxes: [{ stacked: true }],
+                                        yAxes: [
+                                            {
+                                                stacked: true,
+                                                gridLines: {
+                                                    color: "white",
+                                                },
+                                            },
+                                        ],
+                                        xAxes: [
+                                            {
+                                                stacked: true,
+                                            },
+                                        ],
                                     },
                                 }}
                             />
                         </Col>
-                        <Col lg={6}>
+                        <Col lg={4}>
                             <Pie data={pieData} />
                         </Col>
                     </Row>
@@ -467,6 +569,7 @@ export default function Home() {
                                 data={data[item.type]}
                                 type={item}
                                 filterText={filterText}
+                                color={colors[i]}
                             />
                         ) : (
                             ""
