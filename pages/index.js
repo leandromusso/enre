@@ -573,6 +573,11 @@ export default function Home() {
                                 height={300}
                                 data={barData}
                                 options={{
+                                    legend: {
+                                        labels : {
+                                            fontFamily : "'Roboto Mono', 'monospace'",
+                                        }
+                                    },                                    
                                     tooltips: {
                                         mode: "index",
                                         intersect: true,
@@ -585,11 +590,17 @@ export default function Home() {
                                                 gridLines: {
                                                     color: "white",
                                                 },
+                                                ticks: {
+                                                    fontFamily: "'Roboto Mono', 'monospace'",
+                                                }
                                             },
                                         ],
                                         xAxes: [
                                             {
                                                 stacked: true,
+                                                ticks: {
+                                                    fontFamily: "'Roboto Mono', 'monospace'",
+                                                }
                                             },
                                         ],
                                     },
@@ -597,7 +608,16 @@ export default function Home() {
                             />
                         </Col>
                         <Col lg={4}>
-                            <Pie data={pieData} />
+                            <Pie
+                                options={{
+                                    legend: {
+                                        labels : {
+                                            fontFamily : "'Roboto Mono', 'monospace'",
+                                        }
+                                    },                                    
+                                    maintainAspectRatio: false,
+                                }}                            
+                                data={pieData} />
                         </Col>
                     </Row>
 
