@@ -1,89 +1,103 @@
 import {Table, Card} from "react-bootstrap";
 import Countdown from "react-countdown";
+import DataTable from "react-data-table-component";
 
-function DataTable({data, type}) {
+function DataTableComponent({data, type, filterText}) {
+
+    const filteredItems = data.filter(
+        (item) =>
+            `${item.partido}${item.localidad}` &&
+            `${item.partido}${item.localidad}`
+                .toLowerCase()
+                .includes(filterText.toLowerCase())
+    );      
 
     //Componente que se muestra al finalizar el contador
     const Completionist = () => {
         return <span>¿En este momento?</span>;
     };
 
-    return (
-        <Card className="my-2">
-        <Card.Header>{type.label}</Card.Header>
-        <Card.Body>
-            <Table
-                responsive
-                striped
-                bordered
-                hover
-                size="sm"
-            >
-                <thead>
-                    <tr>
-                        <th>Partido</th>
-                        <th>Localidad</th>
-                        {
-                            !type.isBajaTension?(
-                                <th>Subestación</th>
-                            ):('')
-                        }
-                        <th>Usuarios</th>
-                        {
-                            !type.isBajaTension?(
-                                <th>Normalización</th>
-                            ):('')
-                        }                        
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map(
-                        (item, i) => {
-                            return (
-                                <tr key={i}>
-                                    <td>{item.partido}</td>
-                                    <td>
-                                        {item.localidad}
-                                    </td>
-                                    {
-                                        !type.isBajaTension?(
-                                            <td>
-                                                {
-                                                    item.subestacion_alimentador
-                                                }
-                                            </td>
-                                        ):('')
-                                    }                                    
-                                    <td>{item.usuarios}</td>
-                                    {
-                                        !type.isBajaTension?(
-                                            <td>
-                                                {item.normalizacion !=
-                                                    "Sin datos" ? (
-                                                        <Countdown
-                                                            date={
-                                                                item.normalizacion
-                                                            }
-                                                        >
-                                                            <Completionist />
-                                                        </Countdown>
-                                                    ) : (
-                                                        "Sin datos"
-                                                    )
-                                                }
-                                            </td>
-                                        ):('')
-                                    }
-                                </tr>
-                            );
-                        }
-                    )}
-                </tbody>
-            </Table>
-        </Card.Body>
-    </Card>
+    //Custom styles to table
+    const customStyles = {
+        headCells: {
+            style: {
+                fontWeight: "bold",
+            },
+        },
+        rows: {
+            style: {
+                minHeight: "55px",
+            },
+        },
+    };
+    
+    const columns = [
+        {
+            name: "Partido",
+            selector: "partido",
+            sortable: true,
+        },
+        {
+            name: "Localidad",
+            selector: "localidad",
+            sortable: true,
+        },
+        {
+            name: "Usuarios",
+            selector: "usuarios",
+        }
+    ]
 
-    );
+    if(!type.isBajaTension){
+        columns.push(
+            {
+                name: "Subestación",
+                selector: "subestacion_alimentador",
+                sortable: true,                
+            },
+            {
+                name: "Normalización",
+                selector: "normalizacion",
+                sortable: true,
+                cell : row => row.normalizacion !=
+                "Sin datos" ? (
+                    <Countdown
+                        date={
+                            row.normalizacion
+                        }
+                    >
+                        <Completionist />
+                    </Countdown>
+                ) : (
+                    "Sin datos"
+                )                
+            }            
+        )
+    }
+
+    if(filteredItems.length > 0){
+        return (
+            <Card className="my-2">
+            <Card.Header>{type.label}</Card.Header>
+            <Card.Body>
+                <DataTable
+                    dense
+                    className="table"
+                    noHeader={true}
+                    columns={columns}
+                    data={filteredItems}
+                    customStyles={customStyles}
+                />
+            </Card.Body>
+        </Card>
+    
+        );
+    }
+
+    return (
+        <div></div>
+    )
+
 }
 
-export default DataTable;
+export default DataTableComponent;
